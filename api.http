@@ -1,0 +1,13 @@
+POST http://localhost:5000/api/users/register
+
+Content-Type: application/json
+
+{
+    "name": "testuser",
+    "email": "superadmin@gmail.com",
+    "password": "strongpassword@123",
+    "role": "admin",
+    "status": "active",
+    "profilePicture": "https://example.com/profile.jpg",
+    "otpSecret": "abcdef"
+}
