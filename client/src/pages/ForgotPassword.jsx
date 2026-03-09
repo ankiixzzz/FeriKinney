@@ -16,7 +16,7 @@ const ForgotPassword = () => {
       dispatch(setLoader(false));
       if (response.success) {
         message.success(response.message);
-        navigate("/otpverification");
+        navigate("/otpverification", { state: { email: values.email } });
       } else {
         throw new Error(response.message);
       }

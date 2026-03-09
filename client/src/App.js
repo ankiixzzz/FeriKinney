@@ -20,9 +20,9 @@ import ContactUs from "./pages/ContactUs";
 const App = () => {
   const { loading } = useSelector((state) => state.loaders);
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       {loading && <Spinner />}
-      <section>
+      <div className="flex-1">
         <Routes>
           <Route
             path="/"
@@ -73,7 +73,7 @@ const App = () => {
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/contactus" element={<ContactUs />} />
         </Routes>
-      </section>
+      </div>
       <Footer />
     </div>
   );

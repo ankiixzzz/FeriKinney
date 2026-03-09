@@ -159,3 +159,64 @@ export const DeleteBid = async (id) => {
     return error.response.data;
   }
 };
+
+// Price Comparison: get similar products in same category sorted by price
+export const GetPriceComparison = async (productId) => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/products/price-comparison/${productId}`
+    );
+    return response.data;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+// Seller requests a promotion
+export const RequestPromotion = async (payload) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/promotions/request-promotion",
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+// Get all promotions (admin)
+export const GetPromotions = async (filters) => {
+  try {
+    const response = await axiosInstance.post(
+      "/api/promotions/get-promotions",
+      filters
+    );
+    return response.data;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+// Admin approve/reject a promotion
+export const UpdatePromotionStatus = async (id, payload) => {
+  try {
+    const response = await axiosInstance.put(
+      `/api/promotions/update-promotion-status/${id}`,
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+// Seller gets their own promotion requests
+export const GetMyPromotions = async () => {
+  try {
+    const response = await axiosInstance.get("/api/promotions/my-promotions");
+    return response.data;
+  } catch (error) {
+    return error.message;
+  }
+};

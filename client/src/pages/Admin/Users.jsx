@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Popconfirm, Table, Tag, message } from "antd";
 import { useDispatch } from "react-redux";
 import { setLoader } from "../../redux/loadersSlice";
 import moment from "moment";
 import { GetAllUsers, UpdateUserStatus } from "../../apicalls/users";
-import { UpdateProductStatus } from "../../apicalls/products";
 
 function Users() {
   const [users, setUsers] = React.useState([]);
   const dispatch = useDispatch();
+
   const getData = async () => {
     try {
       dispatch(setLoader(true));
@@ -19,7 +19,7 @@ function Users() {
       }
     } catch (error) {
       dispatch(setLoader(false));
-      message(error.message);
+      message.error(error.message);
     }
   };
 
@@ -55,6 +55,11 @@ function Users() {
       render: (text, record) => {
         return record.role.toUpperCase();
       },
+    },
+    {
+      title: "Location",
+      dataIndex: "location",
+      render: (text) => text || "—",
     },
     {
       title: "Created At",
@@ -110,6 +115,7 @@ function Users() {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

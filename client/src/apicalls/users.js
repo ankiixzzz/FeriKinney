@@ -74,11 +74,11 @@ export const verifyOTP = async (payload) => {
 };
 
 //update user information
-export const UpdateUser = async (id, name, email) => {
+export const UpdateUser = async (id, name, email, location) => {
   try {
     const response = await axiosInstance.put(
       `/api/users/update-user/${id}`,
-      { name, email }
+      { name, email, location }
     );
     return response.data;
   } catch (error) {

@@ -244,20 +244,21 @@ router.post("/verify-otp", async (req, res) => {
 // Update user information
 router.put("/update-user/:id", authMiddleware, async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, location } = req.body;
 
     // Validate if name and email are present in the request body
     if (!name || !email) {
       return res.send({
         success: false,
-        message: "Name, email, and password are required fields",
+        message: "Name and email are required fields",
       });
     }
 
-    // Update user information in the database with the hashed password
+    // Update user information in the database
     await User.findByIdAndUpdate(req.params.id, {
       name,
       email,
+      ...(location !== undefined && { location }),
     });
 
     res.send({

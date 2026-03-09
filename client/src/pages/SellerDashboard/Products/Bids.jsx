@@ -150,6 +150,7 @@ const Bids = ({ showBidsModal, setShowBidsModal, selectedProduct }) => {
     if (selectedProduct) {
       getData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProduct]);
   return (
     <Modal

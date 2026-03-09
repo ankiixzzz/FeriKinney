@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Alert, Button, message, Modal } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import { GetProductById, GetProducts } from "../../apicalls/products";
+import React, { useEffect } from "react";
+import { message, Modal } from "antd";
+import { useDispatch } from "react-redux";
+import { GetProductById } from "../../apicalls/products";
 import Divider from "../../components/Divider";
 import moment from "moment";
 import { setLoader } from "../../redux/loadersSlice";
 
 const ProductInfo = ({ showProductInfo, setshowProductInfo, id }) => {
-  const { user } = useSelector((state) => state.users);
   const [selectedImageIndex, setSelectedImageIndex] = React.useState(0);
   const [product, setProduct] = React.useState(null);
   const dispatch = useDispatch();
@@ -25,12 +23,13 @@ const ProductInfo = ({ showProductInfo, setshowProductInfo, id }) => {
       }
     } catch (error) {
       dispatch(setLoader(false));
-      message(error.message);
+      message.error(error.message);
     }
   };
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -48,7 +47,7 @@ const ProductInfo = ({ showProductInfo, setshowProductInfo, id }) => {
               <div className="flex flex-col gap-2">
                 <img
                   src={product.images[selectedImageIndex]}
-                  alt="Product image"
+                  alt={product.name}
                   className="w-full h-96 object-cover rounded-md"
                 />
 
@@ -95,12 +94,18 @@ const ProductInfo = ({ showProductInfo, setshowProductInfo, id }) => {
                   </div>
                   <div className="flex justify-between mt-2">
                     <span>Bill Available</span>
-                    <span>{product.billAvailable ? "Yes" : "No"}</span>
+                    <span>{product.billAvaiable ? "Yes" : "No"}</span>
                   </div>
                   <div className="flex justify-between mt-2">
                     <span>Warranty Available</span>
                     <span>{product.warrantyAvailable ? "Yes" : "No"}</span>
                   </div>
+                  {product.location && (
+                    <div className="flex justify-between mt-2">
+                      <span>Location</span>
+                      <span>{product.location}</span>
+                    </div>
+                  )}
                 </div>
                 <Divider />
                 <div className="flex flex-col">

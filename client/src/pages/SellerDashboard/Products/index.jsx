@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Popconfirm, Table, Tag, message } from "antd";
 import ProductsForm from "./ProductsForm";
+import PromotionModal from "./PromotionModal";
 import { useDispatch, useSelector } from "react-redux";
 import { DeleteProduct, GetProducts } from "../../../apicalls/products";
 import { setLoader } from "../../../redux/loadersSlice";
 import { BiEdit } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { LiaCommentsDollarSolid } from "react-icons/lia";
+import { MdWorkspacePremium } from "react-icons/md";
 import moment from "moment";
 import Bids from "./Bids";
 
@@ -15,8 +17,11 @@ function Products() {
   const [selectedProduct, setSelectedProduct] = React.useState(null);
   const [products, setProducts] = React.useState([]);
   const [showProductForm, setShowProductForm] = useState(false);
+  const [showPromotionModal, setShowPromotionModal] = useState(false);
+  const [promotionProduct, setPromotionProduct] = useState(null);
   const { user } = useSelector((state) => state.users);
   const dispatch = useDispatch();
+
   const getData = async () => {
     try {
       dispatch(setLoader(true));
@@ -29,7 +34,7 @@ function Products() {
       }
     } catch (error) {
       dispatch(setLoader(false));
-      message(error.message);
+      message.error(error.message);
     }
   };
 
@@ -50,6 +55,26 @@ function Products() {
     }
   };
 
+  const getPromotionTag = (record) => {
+    if (!record.promotionStatus || record.promotionStatus === "none") return null;
+    const colorMap = {
+      pending: "processing",
+      approved: record.promotionType === "premium" ? "gold" : "blue",
+      rejected: "error",
+    };
+    const labelMap = {
+      pending: "Promo Pending",
+      approved:
+        record.promotionType === "premium" ? "Premium Ad" : "Featured Ad",
+      rejected: "Promo Rejected",
+    };
+    return (
+      <Tag color={colorMap[record.promotionStatus]} className="mt-1">
+        {labelMap[record.promotionStatus]}
+      </Tag>
+    );
+  };
+
   const columns = [
     {
       title: "Product",
@@ -58,7 +83,7 @@ function Products() {
         return (
           <img
             src={record?.images?.length > 0 ? record.images[0] : ""}
-            alt="Product Image"
+            alt={record.name || "Product"}
             className="w-20 h-20 object-cover rounded-md"
           />
         );
@@ -77,6 +102,11 @@ function Products() {
       dataIndex: "category",
     },
     {
+      title: "Location",
+      dataIndex: "location",
+      render: (text) => text || "-",
+    },
+    {
       title: "Condition",
       dataIndex: "condition",
     },
@@ -85,7 +115,6 @@ function Products() {
       dataIndex: "status",
       render: (text, record) => {
         let tagColor;
-  
         switch (record.status) {
           case "approved":
             tagColor = "success";
@@ -102,8 +131,12 @@ function Products() {
           default:
             tagColor = "default";
         }
-  
-        return <Tag color={tagColor}>{record.status.toUpperCase()}</Tag>;
+        return (
+          <div className="flex flex-col gap-1">
+            <Tag color={tagColor}>{record.status.toUpperCase()}</Tag>
+            {getPromotionTag(record)}
+          </div>
+        );
       },
     },
     {
@@ -120,8 +153,14 @@ function Products() {
       title: "Action",
       dataIndex: "action",
       render: (text, record) => {
+        const canPromote =
+          record.status === "approved" &&
+          (!record.promotionStatus ||
+            record.promotionStatus === "none" ||
+            record.promotionStatus === "rejected");
+
         return (
-          <div className="flex gap-5 cursor-pointer">
+          <div className="flex gap-3 cursor-pointer items-center">
             <BiEdit
               size={18}
               onClick={() => {
@@ -129,15 +168,15 @@ function Products() {
                 setShowProductForm(true);
               }}
             />
-           <Popconfirm
-          title="Are you sure to delete this product?"
-          onConfirm={() => deleteProduct(record._id)}
-          okText="Yes"
-          cancelText="No"
-          okType="default"
-        >
-          <RiDeleteBin6Line size={18} />
-        </Popconfirm>
+            <Popconfirm
+              title="Are you sure to delete this product?"
+              onConfirm={() => deleteProduct(record._id)}
+              okText="Yes"
+              cancelText="No"
+              okType="default"
+            >
+              <RiDeleteBin6Line size={18} />
+            </Popconfirm>
             <LiaCommentsDollarSolid
               size={18}
               onClick={() => {
@@ -145,6 +184,20 @@ function Products() {
                 setShowBids(true);
               }}
             />
+            {canPromote && (
+              <MdWorkspacePremium
+                size={20}
+                className="text-yellow-500 cursor-pointer"
+                title="Request Promotion"
+                onClick={() => {
+                  setPromotionProduct(record);
+                  setShowPromotionModal(true);
+                }}
+              />
+            )}
+            {record.promotionStatus === "pending" && (
+              <span className="text-xs text-yellow-600">Promo pending...</span>
+            )}
           </div>
         );
       },
@@ -153,6 +206,7 @@ function Products() {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -168,7 +222,12 @@ function Products() {
           Add Product
         </Button>
       </div>
-      <Table className="mt-4" columns={columns} dataSource={products} />
+      <Table
+        className="mt-4"
+        columns={columns}
+        dataSource={products}
+        rowKey="_id"
+      />
       {showProductForm && (
         <ProductsForm
           showProductForm={showProductForm}
@@ -183,6 +242,15 @@ function Products() {
           showBidsModal={showBids}
           setShowBidsModal={setShowBids}
           selectedProduct={selectedProduct}
+        />
+      )}
+
+      {showPromotionModal && promotionProduct && (
+        <PromotionModal
+          showModal={showPromotionModal}
+          setShowModal={setShowPromotionModal}
+          selectedProduct={promotionProduct}
+          onSuccess={getData}
         />
       )}
     </div>

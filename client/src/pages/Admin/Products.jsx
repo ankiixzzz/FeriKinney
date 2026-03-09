@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Popconfirm, Table, Tag, message } from "antd";
 import { useDispatch } from "react-redux";
 import { GetProducts, UpdateProductStatus } from "../../apicalls/products";
@@ -11,6 +11,7 @@ function Products() {
   const [showProductInfo, setshowProductInfo] = React.useState(false);
   const [productInfoId, setProductInfoId] = React.useState(null);
   const dispatch = useDispatch();
+
   const getData = async () => {
     try {
       dispatch(setLoader(true));
@@ -21,7 +22,7 @@ function Products() {
       }
     } catch (error) {
       dispatch(setLoader(false));
-      message(error.message);
+      message.error(error.message);
     }
   };
 
@@ -50,7 +51,7 @@ function Products() {
         return (
           <img
             src={record?.images?.length > 0 ? record.images[0] : ""}
-            alt="Product Image"
+            alt={record.name}
             className="w-20 h-20 object-cover rounded-md cursor-pointer"
             onClick={() => {
               setshowProductInfo(true);
@@ -80,6 +81,11 @@ function Products() {
       dataIndex: "category",
     },
     {
+      title: "Location",
+      dataIndex: "location",
+      render: (text) => text || "—",
+    },
+    {
       title: "Added On",
       dataIndex: "createdAt",
       render: (text, record) =>
@@ -88,7 +94,6 @@ function Products() {
     {
       title: "Status",
       dataIndex: "status",
-
       render: (text, record) => {
         let tagColor;
 
@@ -166,13 +171,13 @@ function Products() {
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
       <Table className="mt-4" columns={columns} dataSource={products} />
 
-      {/* more product info */}
       {showProductInfo && (
         <ProductInfo
           showProductInfo={showProductInfo}

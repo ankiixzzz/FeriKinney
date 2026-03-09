@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Form, Input, Button, message } from "antd";
 import { verifyOTP } from "../apicalls/users"; 
 import { useDispatch } from "react-redux";
@@ -8,10 +8,12 @@ import { setLoader } from "../redux/loadersSlice";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
-  const [email, setEmail] = useState(""); // State for email input
-  const [otp, setOTP] = useState(""); // State for OTP input
-  const [newPassword, setNewPassword] = useState(""); // State for new password input
+  const prefillEmail = location.state?.email || "";
+  const [email, setEmail] = useState(prefillEmail);
+  const [otp, setOTP] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const onFinish = async () => {
     try {
@@ -41,7 +43,7 @@ const ForgotPassword = () => {
           <p className="font-medium text-base my-3">
             Enter the 6-digit verification code sent to your email.
           </p>
-          <Form layout="vertical" onFinish={onFinish}>
+          <Form layout="vertical" onFinish={onFinish} initialValues={{ email: prefillEmail }}>
             <Form.Item
               label="Email"
               name="email"

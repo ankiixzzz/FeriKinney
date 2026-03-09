@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Addproduct, EditProduct } from "../../../apicalls/products";
 import { setLoader } from "../../../redux/loadersSlice";
 import Images from "./Images";
+import NEPAL_LOCATIONS from "../../../data/nepalLocations";
 
 const additionalThings = [
   {
@@ -76,7 +77,10 @@ function ProductsForm({
   useEffect(() => {
     if (selectedProduct) {
       formRef.current.setFieldsValue(selectedProduct);
+    } else {
+      formRef.current.setFieldsValue({ location: user.location || "" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedProduct]);
 
   return (
@@ -106,13 +110,13 @@ function ProductsForm({
               </Form.Item>
 
               <Row gutter={[16, 16]}>
-                <Col span={8}>
+                <Col span={6}>
                   <Form.Item label="Price" name="price" rules={rules}>
                     <Input type="number" />
                   </Form.Item>
                 </Col>
 
-                <Col span={8}>
+                <Col span={6}>
                   <Form.Item label="Category" name="category" rules={rules}>
                     <Select>
                       <option value="Household Electronics">
@@ -129,12 +133,32 @@ function ProductsForm({
                   </Form.Item>
                 </Col>
 
-                <Col span={8}>
+                <Col span={6}>
                   <Form.Item label="Condition" name="condition" rules={rules}>
                     <Select>
                       <option value="Brand New">Brand New</option>
                       <option value="Used-Like-New">Used-Like New</option>
                       <option value="Used-Good">Used-Good</option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+
+                <Col span={6}>
+                  <Form.Item label="Location" name="location" rules={rules}>
+                    <Select
+                      showSearch
+                      placeholder="Select location"
+                      filterOption={(input, option) =>
+                        (option?.value ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                    >
+                      {NEPAL_LOCATIONS.map((loc) => (
+                        <Select.Option key={loc} value={loc}>
+                          {loc}
+                        </Select.Option>
+                      ))}
                     </Select>
                   </Form.Item>
                 </Col>

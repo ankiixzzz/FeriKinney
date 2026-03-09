@@ -54,6 +54,25 @@ const productSchema = new mongoose.Schema(
       type: "number",
       default: 0,
     },
+    location: {
+      type: String,
+      default: "",
+    },
+    // Promotional fields
+    promotionType: {
+      type: String,
+      enum: ["none", "featured", "premium"],
+      default: "none",
+    },
+    promotionStatus: {
+      type: String,
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
+    },
+    promotionExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

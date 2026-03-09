@@ -4,30 +4,31 @@ import Navbar from "../components/Navbar";
 import aboutimg from "../images/about-page-img.jpg";
 
 const AboutUs = () => {
-  return (
+  const isLoggedIn = !!localStorage.getItem("token");
+
+  const pageContent = (
     <div>
-      {localStorage.getItem("token") ? <ProtectedPage /> : <Navbar />}
       <div className="flex gap-4 mt-4">
-        <div className="w-1/2  border-gray-400 rounded-lg p-6 bg-[#fafafa]">
+        <div className="w-1/2 border-gray-400 rounded-lg p-6 bg-[#fafafa]">
           <h1 className="text-4xl font-bold mb-2 leading-tight">
-            Our story<br></br> begins with{" "}
+            Our story<br /> begins with{" "}
             <span className="text-4xl font-bold text-[#14ae5c]">you</span>
           </h1>
           <p className="text-justify">
             Kinbech is all about you - Our aim is to empower every person in the
             country to independently connect with buyers and sellers online.
-            Kinbech aims to become India’s no. 1 online classifieds platform -
-            and there’s a reason behind that. We care about you - and the
+            Kinbech aims to become Nepal's no. 1 online classifieds platform -
+            and there's a reason behind that. We care about you - and the
             transactions that bring you closer to your dreams. Want to buy your
-            first car? We’re here for you. Want to sell commercial property to
-            buy a home for your family? We’re here for you. Whatever job you’ve
+            first car? We're here for you. Want to sell commercial property to
+            buy a home for your family? We're here for you. Whatever job you've
             got, we promise to get it done.
           </p>
         </div>
         <div className="w-1/2 flex justify-end">
           <img
             src={aboutimg}
-            alt="About us image"
+            alt="Kinbech marketplace community"
             className="w-10/12 rounded-lg"
           />
         </div>
@@ -48,11 +49,7 @@ const AboutUs = () => {
             Your own control panel. From where you have total control over ads.
           </li>
           <li>
-            Add, edit & delete your ads immediately with minimum time and
-            effort.
-          </li>
-          <li>
-            Add, edit & delete your ads immediately with minimum time and
+            Add, edit &amp; delete your ads immediately with minimum time and
             effort.
           </li>
           <li>
@@ -77,19 +74,17 @@ const AboutUs = () => {
           online registration form and submit.
         </div>
         <h1 className="font-semibold mt-3">
-          {" "}
           3. How do I post an ad for my product or services in the site?
         </h1>
         <div className="mt-2 w-3/4 text-justify">
           Once you have registered an account, then you just have to login to
-          the site. Once logged in, go to 'My Listings Page' button in Menu.Then
-          click Add Product button which opens Product form. Then fill up the
-          form with description, price of your product and other required fields
-          and click on save button.
+          the site. Once logged in, go to 'My Listings Page' button in Menu.
+          Then click Add Product button which opens Product form. Then fill up
+          the form with description, price of your product and other required
+          fields and click on save button.
         </div>
         <h1 className="font-semibold mt-3">
-          {" "}
-         4. Can I change the details of product later?
+          4. Can I change the details of product later?
         </h1>
         <div className="mt-2 w-3/4 text-justify">
           Yes. You can change the details of your products later whenever you
@@ -99,16 +94,26 @@ const AboutUs = () => {
           product picture or delete.
         </div>
         <h1 className="font-semibold mt-3">
-          {" "}
           5. Can I change my personal information and password later?
         </h1>
         <div className="mt-2 w-3/4 text-justify">
           Yes. You can change your personal information whenever you want. You
           need to login to your account and click on 'My Profile' which is
-          revaled after hovering in your name.Now you can update your profile
+          revealed after hovering on your name. Now you can update your profile
           details and password.
         </div>
       </div>
+    </div>
+  );
+
+  if (isLoggedIn) {
+    return <ProtectedPage>{pageContent}</ProtectedPage>;
+  }
+
+  return (
+    <div>
+      <Navbar />
+      {pageContent}
     </div>
   );
 };

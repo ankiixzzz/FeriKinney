@@ -48,6 +48,7 @@ router.post("/get-products", async (req, res) => {
       maxPrice,
       status,
       search,
+      location,
     } = req.body;
     let filters = {};
 
@@ -78,6 +79,10 @@ router.post("/get-products", async (req, res) => {
     // search by name
     if (search) {
       filters.$or = [{ name: { $regex: search, $options: "i" } }];
+    }
+    // filter by location
+    if (location) {
+      filters.location = { $regex: location, $options: "i" };
     }
 
     const products = await Product.find(filters)
@@ -239,6 +244,40 @@ router.post("/update-view-count/:id", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error updating view count:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Price Comparison: get similar products in the same category, sorted by price asc
+// Excludes the current product and only returns approved products
+router.get("/price-comparison/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).send({ success: false, message: "Product not found" });
+    }
+
+    // Find approved products in the same category, excluding this product
+    const similarProducts = await Product.find({
+      _id: { $ne: product._id },
+      category: product.category,
+      status: "approved",
+    })
+      .populate("seller", "name")
+      .sort({ price: 1 }) // cheapest first
+      .limit(10);
+
+    res.send({
+      success: true,
+      data: similarProducts,
+      currentProduct: {
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        category: product.category,
+      },
+    });
+  } catch (error) {
+    res.send({ success: false, message: error.message });
   }
 });
 

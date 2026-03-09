@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Tabs, message, Divider } from "antd";
 import Products from "./Products";
 import Users from "./Users";
+import Promotions from "./Promotions";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setLoader } from "../../redux/loadersSlice";
 import { FaUsers } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
-import { MdPlaylistAddCheck } from "react-icons/md";
+import { MdPlaylistAddCheck, MdWorkspacePremium } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
-import { GetProducts } from "../../apicalls/products";
+import { GetProducts, GetPromotions } from "../../apicalls/products";
 import { GetAllUsers } from "../../apicalls/users";
 
 const Admin = () => {
@@ -19,6 +20,7 @@ const Admin = () => {
   const [totalListings, settotalListings] = useState(0);
   const [approvedListings, setApprovedListings] = useState(0);
   const [pendingListings, setPendingListings] = useState(0);
+  const [pendingPromotions, setPendingPromotions] = useState(0);
 
   const dispatch = useDispatch();
   const getData = async () => {
@@ -41,7 +43,18 @@ const Admin = () => {
       }
     } catch (error) {
       dispatch(setLoader(false));
-      message(error.message);
+      message.error(error.message);
+    }
+  };
+
+  const fetchPendingPromotions = async () => {
+    try {
+      const response = await GetPromotions({ status: "pending" });
+      if (response.success) {
+        setPendingPromotions(response.data.length);
+      }
+    } catch (error) {
+      // non-critical, silently fail
     }
   };
 
@@ -50,7 +63,7 @@ const Admin = () => {
       const usersData = await GetAllUsers();
       setTotalUsers(usersData.data.length);
     } catch (error) {
-      message(error.message);
+      message.error(error.message);
     }
   };
 
@@ -60,6 +73,8 @@ const Admin = () => {
     }
     getData();
     fetchTotalUsers();
+    fetchPendingPromotions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -112,6 +127,18 @@ const Admin = () => {
             <h1 className="text-xl font-bold ">{pendingListings}</h1>
           </div>
         </div>
+        <div className="w-80 bg-[#FFFDE7] p-4 flex gap-4 rounded-md">
+          <MdWorkspacePremium
+            size={48}
+            className="text-white bg-[#F9A825] rounded-full p-2"
+          />
+          <div>
+            <h1 className="text-xs font-medium text-zinc-500">
+              PENDING PROMOTIONS
+            </h1>
+            <h1 className="text-xl font-bold ">{pendingPromotions}</h1>
+          </div>
+        </div>
       </div>
 
       <Tabs>
@@ -120,6 +147,21 @@ const Admin = () => {
         </Tabs.TabPane>
         <Tabs.TabPane tab="Users" key="2">
           <Users />
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          tab={
+            <span className="flex items-center gap-1">
+              Promotions
+              {pendingPromotions > 0 && (
+                <span className="bg-yellow-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {pendingPromotions}
+                </span>
+              )}
+            </span>
+          }
+          key="3"
+        >
+          <Promotions />
         </Tabs.TabPane>
       </Tabs>
     </div>
